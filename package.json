@@ -1,0 +1,15 @@
+{
+  "name": "node_2_class_k32",
+  "version": "1.0.0",
+  "description": "",
+  "main": "demoCRUD.js",
+  "scripts": {
+    "dev": "nodemon demoCRUD.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "nodemon": "^3.1.0"
+  }
+}
