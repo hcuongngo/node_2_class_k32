@@ -29,10 +29,18 @@ const handleApiGetListItem = (req, res) => {
   }
 }
 
-const server = http.createServer((res, req) => {
+const handleApiGetItemDetailById = (req, res) => {
+  const parseUrl = url.parse(req.url, true)
+  const pathSegments = parseUrl.pathname.split("/")
+  console.log("pathSegments", pathSegments)
+}
+
+const server = http.createServer((req, res) => {
   const parseUrl = url.parse(req.url, true)
   const path = parseUrl.pathname
-
+  const pathSegments = path.split("/")
+  console.log("pathSegments", pathSegments)
+  const itemId = parseInt(pathSegments[pathSegments.length - 1])
   if (req.method === "GET" && path === "/api/items") {
     handleApiGetListItem(req, res)
   }
