@@ -57,7 +57,7 @@ const handleApiGetItemDetailById = (req, res) => {
     res.writeHead(404, {
       "Content-Type": "text/plain"
     })
-    res.end("Item id not found")
+    res.end("Item not found")
   }
 }
 
@@ -91,17 +91,17 @@ const handleApiGetItemsPagination = (req, res) => {
   }))
 }
 
-const handleApiCreateNewItem = (req, res) => {  
+const handleApiCreateNewItem = (req, res) => {
   let body = ""
   req.on("data", (chunk) => {
     body += chunk.toString()
     console.log("body", body)
   })
   req.on("end", () => {
-    const bodyObject = JSON.parse(body) 
+    const bodyRequestObject = JSON.parse(body)
     const newItem = {
       id: items.length + 1,
-      ...bodyObject
+      ...bodyRequestObject
     }
     items.push(newItem)
     res.writeHead(201, {
@@ -119,18 +119,50 @@ const handleApiUpdateItem = (req, res) => {
   const pathSegments = parseUrl.pathname.split("/")
   console.log("pathSegments", pathSegments)
   const itemId = parseInt(pathSegments[pathSegments.length - 1])
-  const item = items.find(item => item.id === itemId)
-  if (!item) {
+  const itemIndex = items.findIndex(item => item.id === itemId)
+
+  if (itemIndex === -1) {
     res.writeHead(404, {
       "Content-Type": "text/plain"
     })
-    res.end("Item id not found")
+    res.end("Item not found")
     return
   }
   let body = ""
-  req.on("data", () => {
+  req.on("data", (chunk) => {
     body += chunk.toString()
   })
+  req.on("end", () => {
+    const updatedData = JSON.parse(body)
+    items[itemIndex] = { ...items[itemIndex], ...updatedData }
+    res.writeHead(200, {
+      "Content-Type": "application/json"
+    })
+    res.end(JSON.stringify({
+      message: "Update item successfully",
+      data: items[itemIndex]
+    }))
+  })
+}
+
+const handleApiDeleteItem = (req, res) => {
+  const parseUrl = url.parse(req.url, true)
+  const pathSegments = parseUrl.pathname.split("/")
+  console.log("pathSegments", pathSegments)
+  const itemId = parseInt(pathSegments[pathSegments.length - 1])
+  const itemIndex = items.findIndex(item => item.id === itemId)
+  if (itemIndex === -1) {
+    res.writeHead(404, {
+      "Content-Type": "text/plain"
+    })
+    res.end("Item not found")
+    return
+  }
+  items.splice(itemIndex, 1)
+  res.writeHead(200, {
+    "Content-Type": "text/plain"
+  })
+  res.end("Delete item successfully")
 }
 
 const server = http.createServer((req, res) => {
@@ -147,6 +179,10 @@ const server = http.createServer((req, res) => {
     handleApiGetItemsPagination(req, res)
   } else if (req.method === "POST" && path === "/api/items") {
     handleApiCreateNewItem(req, res)
+  } else if (req.method === "PUT" && path.startsWith("/api/items/")) {
+    handleApiUpdateItem(req, res)
+  } else if (req.method === "DELETE" && path.startsWith("/api/items/")) {
+    handleApiDeleteItem(req, res)
   }
   else {
     res.writeHead(404, {
@@ -159,6 +195,3 @@ const server = http.createServer((req, res) => {
 server.listen(3000, () => {
   console.log("Server is running on port 3000")
 })
-
-
-

@@ -4,12 +4,14 @@
   "description": "",
   "main": "demoCRUD.js",
   "scripts": {
-    "dev": "nodemon demoCRUD.js",
+    "dev": "nodemon demoAuthToken.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "bcrypt": "^5.1.1",
+    "jsonwebtoken": "^9.0.2",
     "nodemon": "^3.1.0"
   }
 }
